@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import Footer from '../components/Footer'
 
 function Blog() {
     const [BlogList, setBlogList] = useState([])
@@ -18,6 +19,9 @@ function Blog() {
     }, [])
 
     return (
+        <div>
+
+        
         <div className="bg-gray-50 min-h-screen p-6">
             {/* Ciwaanka Sare */}
             <div className="max-w-4xl mx-auto mb-12 mt-6">
@@ -85,8 +89,19 @@ function Blog() {
                     Weli wax blog ah lama soo dhigin...
                 </div>
             )}
+
+               
+            
         </div>
+
+        <Footer />
+
+        </div>
+
+        
     )
 }
+
+
 
 export default Blog

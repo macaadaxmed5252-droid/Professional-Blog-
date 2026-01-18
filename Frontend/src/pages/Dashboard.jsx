@@ -12,7 +12,7 @@ function Dashboard() {
     return (
         <div className="flex">
             
-            <div className="bg-purple-400 h-[100] w-[350px] p-5">
+            <div className="bg-purple-500 h-[100] w-[350px] p-5">
                 <div className="flex gap-3 items-center mb-10 text-white">
                     <img className="w-[70px] h-[70px] rounded-full border-2 border-green-500" 
                          src="https://i.pinimg.com/736x/ad/80/55/ad8055b13008318ac2402c5af13cb3d1.jpg" alt="" />
