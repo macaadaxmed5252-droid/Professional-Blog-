@@ -2,11 +2,19 @@ import React from 'react'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
-import { FaTrash, FaEdit } from 'react-icons/fa' // Waxaad u baahantahay: npm install react-icons
+import { MdDelete } from "react-icons/md";
+import { IoIosCreate } from "react-icons/io";
+import Swal from 'sweetalert2'
+
 
 function BlogList() {
+
     const [BlogList, setBlogList] = useState([])
+
     const navigate = useNavigate();
+
+
+
 
     const DataAPI = async () => {
         axios.get("http://localhost:8080/blog").then((res) => {
@@ -16,82 +24,106 @@ function BlogList() {
         })
     }
 
-    const handleDelete = async (id) => {
-        if (window.confirm("Are you sure you want to delete this Content?")) {
-            axios.delete(`http://localhost:8080/blog/${id}`).then((res) => {
-                setBlogList(BlogList.filter((item) => item._id !== id))
-            }).catch((err) => {
-                console.log(err)
-            })
-        }
-    }
+
+    const handleDelete = (id) => {
+    const swalWithBootstrapButtons = Swal.mixin({
+      customClass: {
+        confirmButton: "bg-green-500 text-white font-bold py-2 px-4 rounded ml-2", // Waxaan u isticmaalay Tailwind maadaama aad isticmaalaysid
+        cancelButton: "bg-red-500 text-white font-bold py-2 px-4 rounded"
+      },
+      buttonsStyling: false
+    });
+
+    swalWithBootstrapButtons.fire({
+      title: "Ma hubtaa?",
+      text: "Xogtan dib uma soo celin kartid hadaad tirtirto!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Haa, tirtir!",
+      cancelButtonText: "Maya, iska dhaaf!",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Halkan waxaa ku jira shaqadii tirtirista (Axios)
+        axios.delete(`http://localhost:8080/blog/${id}`).then((res) => {
+          setBlogList(BlogList.filter((item) => item._id !== id));
+          
+          // Markay tirtiristu guulaysato
+          swalWithBootstrapButtons.fire({
+            title: "Waa la tirtiray!",
+            text: "Xogtaadii si guul leh ayaa loo tirtiray.",
+            icon: "success"
+          });
+        }).catch((err) => {
+          console.log(err);
+          swalWithBootstrapButtons.fire({
+            title: "Cillad ayaa dhacday!",
+            text: "Ma suurtagalin in xogta la tirtiro.",
+            icon: "error"
+          });
+        });
+
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        swalWithBootstrapButtons.fire({
+          title: "Waa laga noqday",
+          text: "Xogtaadu waa amaan :)",
+          icon: "error"
+        });
+      }
+    });
+  };
 
     useEffect(() => {
         DataAPI()
     }, [])
 
+
+
+
     return (
-        <div className="p-6 bg-gray-50 min-h-screen">
-            <h1 className="text-3xl font-bold text-gray-800 mb-8 border-b-2 border-purple-500 w-fit pb-2">
-                Manage Blogs
-            </h1>
+        <>
+            <h1 className="text-center  text-5xl font-semibold  pt-4 uppercase">Blog List</h1>
 
-            <div className='flex flex-col gap-6'>
-                {BlogList.map((item, index) => (
-                    <div key={index} className='bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 flex overflow-hidden'>
-                        
-                        {/* QAYBTA BIDIX: QORAALKA */}
-                        <div className='flex-1 p-6 flex flex-col justify-between'>
-                            <div>
-                                <span className='bg-purple-100 text-purple-700 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider'>
-                                    {item.category || "General"}
-                                </span>
-                                <h1 className='text-2xl font-bold text-gray-800 mt-3 mb-2 leading-tight'>
-                                    {item.title}
-                                </h1>
-                                <p className='text-gray-500 text-sm line-clamp-2 leading-relaxed'>
-                                    {item.description}
-                                </p>
-                            </div>
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6 mt-10 p-4'>
+                {
+                    BlogList.map((item, index) => {
+                        return (
+                            <div key={index} className='bg-white border relative border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 overflow-hidden group flex flex-col  '>
 
-                            <div className='mt-6 flex justify-between items-center'>
-                                <div className='flex flex-col'>
-                                    <span className='text-sm font-bold text-gray-700'>{item.author}</span>
-                                    <span className='text-xs text-gray-400'>{item.date}</span>
+                                <img className='w-[200px] h-[140px] group-hover:scale-105 transition-transform duration-500 absolute  right-0     ' src={item.img} alt="" />
+
+
+                                <div className='px-5 pt-5'>
+                                    <span className='bg-purple-100 text-purple-700 text-xs font-bold px-3 py-3 rounded-full upercase '>{item.category || "General"}</span>
                                 </div>
 
-                                {/* BADHAMADA */}
-                                <div className='flex gap-3'>
-                                    <button 
-                                        onClick={() => navigate(`/update/${item._id}`)} 
-                                        className='flex items-center gap-2 text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg transition-colors text-sm font-semibold'
-                                    >
-                                        <FaEdit /> Update
-                                    </button>
-                                    <button 
-                                        onClick={() => handleDelete(item._id)} 
-                                        className='flex items-center gap-2 text-red-500 hover:bg-red-50 px-4 py-2 rounded-lg transition-colors text-sm font-semibold'
-                                    >
-                                        <FaTrash /> Delete
-                                    </button>
+                                <div className='p-5 flex-1'>
+                                    <h1 className='text-xl font-bold text-gray-800 mb-2 line-clamp-1'>{item.title}</h1>
+                                    <p className='text-sm text-gray-700 line-clamp-2'>{item.description}</p>
                                 </div>
-                            </div>
-                        </div>
 
-                        {/* QAYBTA MIDIG: SAWIRKA */}
-                        {item.img && (
-                            <div className='w-48 h-48 p-4 hidden md:block'>
-                                <img 
-                                    className='w-full h-full object-cover rounded-xl shadow-inner border border-gray-50' 
-                                    src={item.img} 
-                                    alt={item.title} 
-                                />
+                                <div className='bg-gray-50 px-5 py-3 border-t border-gray-100 flex justify-between items-center text text-gray-500'>
+                                    <div className='flex flex-col'>
+                                        <span className='text-xs font-semibold'>{item.author}</span>
+                                        <span className='text-xs font-semibold'>{item.date}</span>
+
+
+                                    </div>
+
+                                    <div className='flex gap-4'>
+                                        <button onClick={() => handleDelete(item._id)} className=' flex gap-2 items-center text-xl hover:bg-red-100 hover:duration-500  w-[100px] h-[40px] text-red-500 font-semibold rounded-lg '> <span className='pt-1 pl-1 '><MdDelete /></span> Delete</button>
+                                        <button onClick={() => navigate(`/update/${item._id}`)} className='flex gap-1 items-center text-xl hover:bg-purple-100 hover:duration-500   w-[100px] h-[40px] text-purple-500 font-semibold rounded-lg  '> <span className='pt-1 pl-1 '><IoIosCreate /> </span> Update</button>
+                                    </div>
+
+                                </div>
+
                             </div>
-                        )}
-                    </div>
-                ))}
+                        )
+                    })
+                }
             </div>
-        </div>
+
+        </>
     )
 }
 
