@@ -1,28 +1,22 @@
-import Dashboard from "./pages/Dashboard"
-import Blog from "./pages/Blog"
+import { Route, Routes } from "react-router-dom"
 import Header from "./components/header"
+import Blog from "./pages/Blog"
+import Dashboard from "./pages/Dashboard"
 import BlogList from "./pages/BlogList"
 import CreateBlog from "./pages/CreateBlog"
 import Update from "./pages/Update"
-import { Route, Routes } from "react-router-dom"
-
-
 
 function App() {
   return (
     <>
-
-
       <Header />
       <Routes>
         <Route path="/" element={<Blog />} />
-        <Route path="/Dashboard" element={<Dashboard />} />
-        <Route path="/dashboard/:id" element={<CreateBlog />} />
-        <Route path="/dashboard/:id" element={<BlogList />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/create" element={<CreateBlog />} />
+        <Route path="/bloglist" element={<BlogList />} />
         <Route path="/update/:id" element={<Update />} />
-
       </Routes>
-      
     </>
   )
 }
